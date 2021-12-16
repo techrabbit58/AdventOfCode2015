@@ -6,12 +6,12 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.*;
 
-public class Day09FindShortestPath {
+public class Day09FindShortestLongestPath {
 
     @SneakyThrows
     public static void main(String[] args) {
 
-        var url = Day09FindShortestPath.class.getResource("/distances.txt");
+        var url = Day09FindShortestLongestPath.class.getResource("/distances.txt");
         var path = Paths.get(Objects.requireNonNull(url).toURI());
 
         Map<String, Integer> distances = new HashMap<>();

@@ -10,12 +10,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-public class AssemblyRequired {
+public class Day07AssemblyRequired {
 
     @SneakyThrows
     public static void main(String[] args) {
 
-        var url = AssemblyRequired.class.getResource("/assemblyinstructions.txt");
+        var url = Day07AssemblyRequired.class.getResource("/assemblyinstructions.txt");
         var path = Paths.get(Objects.requireNonNull(url).toURI());
 
         Map<String, Instruction> wires = new HashMap<>();

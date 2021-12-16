@@ -15,7 +15,7 @@ public class Day10LookAndSay {
         result = lookAndSay("3113322113", 40);
         System.out.println("part 1 solution: " + result.length());
 
-        // Part 1
+        // Part 2 (10 more repetitions)
         result = lookAndSay(result, 10);
         System.out.println("part 2 solution: " + result.length());
     }

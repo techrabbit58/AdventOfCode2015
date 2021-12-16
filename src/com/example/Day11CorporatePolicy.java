@@ -22,7 +22,11 @@ public class Day11CorporatePolicy {
     }
 
     private static boolean isNotValid(String word) {
-        return !hasIncreasingStraitOfThree(word) || !doesNotContainIOL(word) || !hasTwoNonOverlappingDifferentPairs(word);
+        return !(
+                hasIncreasingStraitOfThree(word)
+                && doesNotContainIOL(word)
+                && hasTwoNonOverlappingDifferentPairs(word)
+        );
     }
 
     private static boolean hasTwoNonOverlappingDifferentPairs(String word) {

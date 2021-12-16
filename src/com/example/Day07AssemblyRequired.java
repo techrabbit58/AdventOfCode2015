@@ -15,7 +15,7 @@ public class Day07AssemblyRequired {
     @SneakyThrows
     public static void main(String[] args) {
 
-        var url = Day07AssemblyRequired.class.getResource("/assemblyinstructions.txt");
+        var url = Day07AssemblyRequired.class.getResource("/assembly_instructions.txt");
         var path = Paths.get(Objects.requireNonNull(url).toURI());
 
         Map<String, Instruction> wires = new HashMap<>();

@@ -15,7 +15,7 @@ public class Day06LightingConfiguration {
         var part1Lights = new boolean[1000][1000];
         var part2Lights = new long[1000][1000];
 
-        var url = Day06LightingConfiguration.class.getResource("/lightinginstructions.txt");
+        var url = Day06LightingConfiguration.class.getResource("/lighting_instructions.txt");
         var path = Paths.get(Objects.requireNonNull(url).toURI());
 
         Files.lines(path).forEach(line -> {

@@ -12,7 +12,7 @@ public class Day05NaughtyOrNice {
     @SneakyThrows
     public static void main(String[] args) {
 
-        var url = Day05NaughtyOrNice.class.getResource("/naughtyornice.txt");
+        var url = Day05NaughtyOrNice.class.getResource("/naughty_or_nice.txt");
         var file = new File(Objects.requireNonNull(url).toURI());
         var input = new Scanner(file);
 

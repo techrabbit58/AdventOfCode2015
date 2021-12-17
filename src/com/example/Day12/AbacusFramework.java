@@ -5,16 +5,19 @@ public class AbacusFramework {
     public static void main(String[] args) {
 
         var storage = new Storage("/peculiar_storage.json");
-        var summingUnit = new SummingUnit();
+        var part1SummingUnit = new PushDownSummingUnit();
+        var part2SummingUnit = new RecursiveSummingUnit();
+        int result;
 
-        for (var ch : storage) summingUnit.accept(ch);
+        for (var ch : storage) {
+            part1SummingUnit.accept(ch);
+            part2SummingUnit.accept(ch);
+        }
 
-        var result = summingUnit.getAllNumbers().stream().reduce(Integer::sum).orElse(0);
-
+        result = part1SummingUnit.getAllNumbers().stream().reduce(Integer::sum).orElse(0);
         System.out.println("part 1 solution = " + result);
 
-        result = summingUnit.getAllNonRedNumbers().stream().reduce(Integer::sum).orElse(0);
-
+        result = part2SummingUnit.getAllNumbers().stream().reduce(Integer::sum).orElse(0);
         System.out.println("part 2 solution = " + result);
     }
 }

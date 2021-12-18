@@ -51,11 +51,7 @@ public class Storage implements Iterable<String> {
         return Iterable.super.spliterator();
     }
 
-    public int size() {
-        return peculiarStorage.length();
-    }
-
-    public String at(final int index) {
-        return peculiarStorage.substring(index, index + 1);
+    public String getPeculiarStorage() {
+        return peculiarStorage;
     }
 }

@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
 
-public class PushDownSummingUnit implements SummingUnit {
+public class PushDownSummingUnit {
 
     private static final String OBJECT = "}";
     private static final String ARRAY = "]";
@@ -18,12 +18,10 @@ public class PushDownSummingUnit implements SummingUnit {
     private StringBuilder currentAtom = null;
     int counter = 0;
 
-    @Override
     public List<Integer> getAllNumbers() {
         return allNumbers;
     }
 
-    @Override
     public void accept(String ch) {
 
         switch (ch) {

@@ -1,78 +1,36 @@
 package com.example.Day12;
 
+import lombok.ToString;
+
 public class AbacusFramework {
+
+    private static boolean noRed = false;
 
     public static void main(String[] args) {
 
         var storage = new Storage("/peculiar_storage.json");
-        var summingUnit = new PushDownSummingUnit();
-        int result;
 
-        for (var ch : storage) summingUnit.accept(ch);
+        noRed = false;
+        System.out.println("part 1 solution = " + recursiveBalance(storage.getPeculiarStorage()));
 
-        result = summingUnit.getAllNumbers().stream().reduce(Integer::sum).orElse(0);
-        System.out.println("part 1 solution = " + result);
-
-
-        result = recursiveBalanceNoRed(storage.getPeculiarStorage());
-        System.out.println("part 2 solution = " + result);
-
-        System.out.println(
-                "skip five blanks: " + skipBlanks("     ", new Pod(0, 0, false), 0)
-        );
-        System.out.println(
-                "recognize a string: " + evaluateString(
-                        "\"foo +1234:,true\"", new Pod(0, 0, false), 1
-                )
-        );
-        System.out.println(
-                "recognize 'red': " + evaluateString("\"red\"", new Pod(0, 0, false), 1)
-        );
-        System.out.println(
-                "recognize a positive number and change balance: " + evaluateNumber(
-                        "123", new Pod(0, 77, false), 0
-                )
-        );
-        System.out.println(
-                "recognize a negative number and change balance: " + evaluateNumber(
-                        "-123", new Pod(0, 323, false), 0
-                )
-        );
-        System.out.println(
-                "recognize a signed number and change balance: " + evaluateNumber(
-                        "+123", new Pod(0, 77, false), 0
-                )
-        );
-        System.out.println(
-                "'red' context with number does not change balance: " + evaluateNumber(
-                        "123", new Pod(0, 77, true), 0
-                )
-        );
-        System.out.println("can handle 'null' values: " +
-                evaluateNull("null", new Pod(0, 0, false), 0)
-        );
-        System.out.println("can handle 'true' values: " +
-                evaluateTrue("true", new Pod(0, 0, false), 0)
-        );
-        System.out.println("can handle 'false' values: " +
-                evaluateFalse("false", new Pod(0, 0, false), 0)
-        );
+        noRed = true;
+        System.out.println("part 2 solution = " + recursiveBalance(storage.getPeculiarStorage()));
     }
 
-    private static int recursiveBalanceNoRed(String text) {
+    private static int recursiveBalance(String text) {
 
-        var pod = new Pod(0, 0, false);
+        var pod = new Pod(0, 0);
 
         while (pod.index < text.length()) {
             pod = switch (text.charAt(pod.index)) {
-                case ' ', '\n', '\r', '\t' -> skipBlanks(text, pod, 0);
-                case '{' -> evaluateObject(text, pod, 1);
-                case '[' -> evaluateArray(text, pod, 1);
-                case '"' -> evaluateString(text, pod, 1);
-                case '-', '+', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9' -> evaluateNumber(text, pod, 0);
-                case 'f' -> evaluateFalse(text, pod, 0);
-                case 't' -> evaluateTrue(text, pod, 0);
-                case 'n' -> evaluateNull(text, pod, 0);
+                case ' ', '\n', '\r', '\t' -> skipWhitespace(text, pod);
+                case '{' -> evaluateObject(text, pod);
+                case '[' -> evaluateArray(text, pod);
+                case '"' -> evaluateString(text, pod);
+                case '-', '+', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9' -> evaluateNumber(text, pod);
+                case 'f' -> evaluateFalse(text, pod);
+                case 't' -> evaluateTrue(text, pod);
+                case 'n' -> evaluateNull(text, pod);
                 default -> throw new RuntimeException(
                         "unexpected character '" + text.charAt(pod.index) + "' at " + pod.index);
             };
@@ -81,68 +39,120 @@ public class AbacusFramework {
         return pod.balance;
     }
 
-    private static Pod evaluateObject(String text, Pod pod, int bias) {
+    /**
+     * An object is a comma-separated list of key:value pairs, where keys are strings and values are any
+     * valid JSON element.
+     */
+    private static Pod evaluateObject(String text, Pod pod) {
 
-        var index = pod.index + bias;
+        var index = pod.index + 1;
         var balance = pod.balance;
+        pod = new Pod(index, 0);
+
+        var isValue = false;
+        var isRed = false;
 
         Character ch = null;
         while (index < text.length() && (ch = text.charAt(index)) != '}') {
-            if (ch == '{') {
-                pod = evaluateObject(text, new Pod(index, balance,false), 1);
-                index = pod.index;
-                balance = pod.balance;
-            } else {
-                index += 1;
-            }
+            pod = switch (ch) {
+                case ' ', '\n', '\r', '\t' -> skipWhitespace(text, new Pod(index, pod.balance));
+                case '{' -> evaluateObject(text, new Pod(index, pod.balance));
+                case '[' -> evaluateArray(text, new Pod(index, pod.balance));
+                case '"' -> {
+                    var p = evaluateString(text, new Pod(index, pod.balance));
+                    isRed = isRed || p.isRed;
+                    yield p;
+                }
+                case '-', '+', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9' ->
+                        evaluateNumber(text, new Pod(index, pod.balance));
+                case 'f' -> evaluateFalse(text, new Pod(index, pod.balance));
+                case 't' -> evaluateTrue(text, new Pod(index, pod.balance));
+                case 'n' -> evaluateNull(text, new Pod(index, pod.balance));
+                case ',' -> {
+                    isValue = false;
+                    yield new Pod(pod.index + 1, pod.balance);
+                }
+                case ':' -> {
+                    if (isValue) throw new RuntimeException("object: key without value");
+                    isValue = true;
+                    yield new Pod(pod.index + 1, pod.balance);
+                }
+                default -> throw new RuntimeException("object: unexpected character: '" + ch + "'");
+            };
+            index = pod.index;
         }
 
-        if (ch != '}') throw new RuntimeException("object: unexpected end of text");
+        if (ch != null && ch != '}') throw new RuntimeException("object: unexpected end of text");
 
-        return new Pod(index + 1, balance, pod.isRed);
+        balance += (noRed && isRed) ? 0 : pod.balance;
+
+        return new Pod(index + 1, balance, false);
     }
 
     /**
      * An array is a list of JSON objects separated by commas.
      */
-    private static Pod evaluateArray(String text, Pod pod, int bias) {
+    private static Pod evaluateArray(String text, Pod pod) {
 
-        return new Pod(pod.index + bias, pod.balance, pod.isRed);
+        var index = pod.index + 1;
+        pod = new Pod(index, pod.balance);
+
+        Character ch = null;
+        while (index < text.length() && (ch = text.charAt(index)) != ']') {
+            pod = switch (ch) {
+                case ' ', '\n', '\r', '\t' -> skipWhitespace(text, new Pod(index, pod.balance));
+                case '{' -> evaluateObject(text, new Pod(index, pod.balance));
+                case '[' -> evaluateArray(text, new Pod(index, pod.balance));
+                case '"' -> evaluateString(text, new Pod(index, pod.balance));
+                case '-', '+', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9' ->
+                        evaluateNumber(text, new Pod(index, pod.balance));
+                case 'f' -> evaluateFalse(text, new Pod(index, pod.balance));
+                case 't' -> evaluateTrue(text, new Pod(index, pod.balance));
+                case 'n' -> evaluateNull(text, new Pod(index, pod.balance));
+                case ',' -> new Pod(pod.index + 1, pod.balance);
+                default -> throw new RuntimeException("array: unexpected character: '" + ch + "'");
+            };
+            index = pod.index;
+        }
+
+        if (ch != null && ch != ']') throw new RuntimeException("array: unexpected end of text");
+
+        return new Pod(index + 1, pod.balance);
     }
 
-    private static Pod evaluateTrue(String text, Pod pod, int bias) {
-        return skipString(text, pod, bias, "true");
+    private static Pod evaluateTrue(String text, Pod pod) {
+        return skipString(text, pod, "true");
     }
 
-    private static Pod evaluateFalse(String text, Pod pod, int bias) {
-        return skipString(text, pod, bias, "false");
+    private static Pod evaluateFalse(String text, Pod pod) {
+        return skipString(text, pod, "false");
     }
 
-    private static Pod evaluateNull(String text, Pod pod, int bias) {
-        return skipString(text, pod, bias, "null");
+    private static Pod evaluateNull(String text, Pod pod) {
+        return skipString(text, pod, "null");
     }
 
-    private static Pod skipString(String text, Pod pod, int bias, String literal) {
+    private static Pod skipString(String text, Pod pod, String literal) {
 
-        var index = pod.index + bias;
+        var index = pod.index;
         var len = literal.length();
         var sub = text.substring(index, index + len);
 
         if (!literal.equals(sub)) throw new RuntimeException("unknown literal '" + sub + "'");
 
-        return new Pod(index + len, pod.balance, pod.isRed);
+        return new Pod(index + len, pod.balance);
     }
 
-    private static Pod evaluateNumber(String text, Pod pod, int bias) {
+    private static Pod evaluateNumber(String text, Pod pod) {
 
-        var index = pod.index + bias;
+        var index = pod.index;
         var balance = pod.balance;
         var literal = new StringBuilder();
         var len = text.length();
 
-        Character ch = (index < len) ? text.charAt(index) : '0';
+        Character ch = text.charAt(index);
 
-        if (index < len && (ch == '+' || ch == '-')) {
+        if (ch == '+' || ch == '-') {
             literal.append(ch);
             index += 1;
         }
@@ -153,17 +163,17 @@ public class AbacusFramework {
         }
 
         try {
-            balance += pod.isRed ? 0 : Integer.parseInt(literal.toString());
+            balance += Integer.parseInt(literal.toString());
         } catch (NumberFormatException e) {
             throw new RuntimeException(e.getMessage());
         }
 
-        return new Pod(index, balance, false);
+        return new Pod(index, balance);
     }
 
-    private static Pod evaluateString(String text, Pod pod, int bias) {
+    private static Pod evaluateString(String text, Pod pod) {
 
-        var index = pod.index + bias;
+        var index = pod.index + 1;
         var balance = pod.balance;
         var literal = new StringBuilder();
         var len = text.length();
@@ -179,16 +189,31 @@ public class AbacusFramework {
         return new Pod(index + 1, balance, literal.toString().equals("red"));
     }
 
-    private static Pod skipBlanks(String text, Pod pod, int bias) {
+    private static Pod skipWhitespace(String text, Pod pod) {
 
-        var index = pod.index + bias;
+        var index = pod.index;
         var balance = pod.balance;
 
         while (index < text.length() && Character.isWhitespace(text.charAt(index))) index += 1;
 
-        return new Pod(index, balance, false);
+        return new Pod(index, balance);
     }
 
-    private record Pod(int index, int balance, boolean isRed) {
+    @ToString
+    private static class Pod {
+
+        int index;
+        int balance;
+        boolean isRed;
+
+        Pod(int index, int balance) {
+            this(index, balance, false);
+        }
+
+        Pod(int index, int balance, boolean isRed) {
+            this.index = index;
+            this.balance = balance;
+            this.isRed = isRed;
+        }
     }
 }

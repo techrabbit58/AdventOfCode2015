@@ -2,7 +2,6 @@ package com.example.Day14;
 
 final class Reindeer {
 
-    private final String _name;
     private final int _velocity;
     private final int _runTime;
     private int _score;
@@ -10,8 +9,7 @@ final class Reindeer {
     private int _seconds;
     private final int _cycleTime;
 
-    Reindeer(String name, int velocity, int runTime, int offTime) {
-        _name = name;
+    Reindeer(int velocity, int runTime, int offTime) {
         _velocity = velocity;
         _runTime = runTime;
         _score = 0;
@@ -20,17 +18,13 @@ final class Reindeer {
         _cycleTime = _runTime + offTime;
     }
 
-    String name() {
-        return _name;
-    }
-
     void addOnePoint() {
         _score += 1;
     }
 
     void tick() {
         _seconds = (_seconds + 1) % _cycleTime;
-        if (_seconds < _runTime) _distance += _velocity;
+        if (_seconds > 0 && _seconds <= _runTime) _distance += _velocity;
     }
 
     int score() {

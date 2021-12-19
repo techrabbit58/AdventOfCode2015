@@ -11,13 +11,12 @@ import java.util.Objects;
 
 public class ReindeerOlympics {
 
-    // private static final int TIME_LIMIT = 2503;
-    private static final int TIME_LIMIT = 1000;
+    private static final int TIME_LIMIT = 2503;
 
     @SneakyThrows
     public static void main(String[] args) {
 
-        var url = KnightsOfTheDinnerTable.class.getResource("/reindeer_descriptions_for_test.txt");
+        var url = KnightsOfTheDinnerTable.class.getResource("/reindeer_descriptions.txt");
         var path = Paths.get(Objects.requireNonNull(url).toURI());
 
         var reindeers = new ArrayList<Reindeer>();
@@ -25,8 +24,6 @@ public class ReindeerOlympics {
 
         var maxDistance = 0;
         for (var r : reindeers) maxDistance = Math.max(maxDistance, r.distanceAfter(TIME_LIMIT));
-
-        System.out.println("part 1 solution = " + maxDistance);
 
         for (var second = 0; second < TIME_LIMIT; second++) {
             reindeers.forEach(Reindeer::tick);
@@ -38,11 +35,9 @@ public class ReindeerOlympics {
         }
 
         var maxScore = 0;
-        for (var r : reindeers) {
-            System.out.println(r.name() + ", score = " + r.score());
-            maxScore = Math.max(maxScore, r.score());
-        }
+        for (var r : reindeers) maxScore = Math.max(maxScore, r.score());
 
+        System.out.println("part 1 solution = " + maxDistance);
         System.out.println("part 2 solution = " + maxScore);
     }
 
@@ -50,12 +45,11 @@ public class ReindeerOlympics {
 
         var parts = line.split("[\\s]");
 
-        var name = parts[0];
         var velocity = Integer.parseInt(parts[3]);
         var runTime = Integer.parseInt(parts[6]);
         var offTime = Integer.parseInt(parts[parts.length - 2]);
 
-        var reindeer = new Reindeer(name, velocity, runTime, offTime);
+        var reindeer = new Reindeer(velocity, runTime, offTime);
         reindeers.add(reindeer);
     }
 }

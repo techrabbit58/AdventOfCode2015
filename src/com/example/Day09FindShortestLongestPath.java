@@ -40,7 +40,10 @@ public class Day09FindShortestLongestPath {
         System.out.println("part 2 solution = " + maxTripSize);
     }
 
-    private static void permute(List<String> items, List<LinkedList<String>> permutations) {
+    /**
+     * Must be public to allow uses from other classes, e.g. for day 13
+     */
+    public static void permute(List<String> items, List<LinkedList<String>> permutations) {
 
         if (items.size() == 0) permutations.add(new LinkedList<>());
         else for (var element : items) {

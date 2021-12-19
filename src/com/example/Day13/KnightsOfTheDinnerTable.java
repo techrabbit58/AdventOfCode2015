@@ -6,58 +6,81 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.*;
 
+import static com.example.Day09FindShortestLongestPath.permute;
+
 public class KnightsOfTheDinnerTable {
 
     @SneakyThrows
     public static void main(String[] args) {
 
-        var url = KnightsOfTheDinnerTable.class.getResource("/happiness_units_for_test.txt");
+        var url = KnightsOfTheDinnerTable.class.getResource("/happiness_units.txt");
         var path = Paths.get(Objects.requireNonNull(url).toURI());
 
-        Set<String> persons = new TreeSet<>();
+        List<String> persons = new ArrayList<>();
         Map<Sympathy, Integer> units = new HashMap<>();
 
         Files.lines(path).forEach(line -> parse(line, persons, units));
+        var circles = findAllArrangements(persons);
 
-        List<LinkedList<String>> circles = new ArrayList<>();
-        permute(persons.stream().toList(), circles);
-        circles.forEach(c -> c.addLast(c.get(0)));
+        var maxTotalHappinessChange = getMaxTotalHappinessChange(units, circles);
+        System.out.println("part 1 solution: " + maxTotalHappinessChange);
 
-        circles.forEach(System.out::println);
-        System.out.println();
-        units.forEach((key, value) -> System.out.println(key + " = " + value));
+        persons.add("$");
+        circles = findAllArrangements((persons));
+        maxTotalHappinessChange = getMaxTotalHappinessChange(units, circles);
+        System.out.println("part 2 solution: " + maxTotalHappinessChange);
     }
 
-    private static void parse(String line, Set<String> persons, Map<Sympathy, Integer> units) {
+    private static int getMaxTotalHappinessChange(Map<Sympathy, Integer> units, List<LinkedList<String>> circles) {
+
+        var maxTotalHappinessChange = 0;
+
+        for (LinkedList<String> circle : circles) {
+
+            var numPersons = circle.size();
+
+            var totalHappinessChange = 0;
+
+            for (var i = 0; i < numPersons; i++) {
+
+                var subject = circle.get(i);
+                var leftSeatMate = new Sympathy(subject, circle.get((i + numPersons - 1) % numPersons));
+                var rightSeatMate = new Sympathy(subject, circle.get((i + 1) % numPersons));
+
+                totalHappinessChange += units.getOrDefault(leftSeatMate, 0)
+                        + units.getOrDefault(rightSeatMate, 0);
+            }
+
+            maxTotalHappinessChange = Math.max(maxTotalHappinessChange, totalHappinessChange);
+        }
+
+        return maxTotalHappinessChange;
+    }
+
+    private static List<LinkedList<String>> findAllArrangements(List<String> persons) {
+
+        List<LinkedList<String>> circles = new LinkedList<>();
+        var head = persons.get(persons.size() - 1);
+        var tail = persons.subList(0, persons.size() - 1);
+
+        permute(tail, circles);
+        circles.forEach(c -> c.addFirst(head));
+
+        return circles;
+    }
+
+    private static void parse(String line, List<String> persons, Map<Sympathy, Integer> units) {
 
         var parts = line.split("[\\s.]");
 
-        var person = parts[0];
+        var subject = parts[0];
         var sign = parts[2].equals("gain") ? 1 : -1;
         var value = sign * Integer.parseInt(parts[3]);
         var seatmate = parts[parts.length - 1];
 
-        persons.add(person);
-        persons.add(seatmate);
-
-        units.put(new Sympathy(person, seatmate), value);
+        if (!persons.contains(subject)) persons.add(subject);
+        units.put(new Sympathy(subject, seatmate), value);
     }
 
     private record Sympathy(String person, String seatmate) {}
-
-    private static void permute(List<String> persons, List<LinkedList<String>> circles) {
-
-        if (persons.size() == 0) circles.add(new LinkedList<>());
-        else for (var element : persons) {
-
-            var p = new ArrayList<LinkedList<String>>();
-            permute(persons.stream().filter(e -> !element.equals(e)).toList(), p);
-
-            for (var q : p) {
-                q.addFirst(element);
-                circles.add(q);
-            }
-        }
-    }
-
 }

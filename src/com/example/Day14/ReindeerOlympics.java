@@ -1,6 +1,5 @@
 package com.example.Day14;
 
-import com.example.Day13.KnightsOfTheDinnerTable;
 import lombok.SneakyThrows;
 
 import java.nio.file.Files;
@@ -16,7 +15,7 @@ public class ReindeerOlympics {
     @SneakyThrows
     public static void main(String[] args) {
 
-        var url = KnightsOfTheDinnerTable.class.getResource("/reindeer_descriptions.txt");
+        var url = ReindeerOlympics.class.getResource("/reindeer_descriptions.txt");
         var path = Paths.get(Objects.requireNonNull(url).toURI());
 
         var reindeers = new ArrayList<Reindeer>();

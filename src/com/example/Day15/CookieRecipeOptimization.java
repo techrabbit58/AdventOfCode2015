@@ -4,9 +4,7 @@ import lombok.SneakyThrows;
 
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 public class CookieRecipeOptimization {
 
@@ -16,18 +14,25 @@ public class CookieRecipeOptimization {
         var url = CookieRecipeOptimization.class.getResource("/ingredients_for_test.txt");
         var path = Paths.get(Objects.requireNonNull(url).toURI());
 
-        List<Ingredient> ingredients = new ArrayList<>();
+        Map<String, Ingredient> ingredients = new TreeMap<>();
         Files.lines(path).forEach(line -> parse(line, ingredients));
 
-        ingredients.forEach(System.out::println);
+        ingredients.entrySet().forEach(System.out::println);
+
+        var recipe = Recipe.builder()
+                .ingredient(ingredients.get("Butterscotch"), 44)
+                .ingredient(ingredients.get("Cinnamon"), 56)
+                .build();
+
+        System.out.println("score: " + recipe.score());
     }
 
-    private static void parse(String line, List<Ingredient> ingredients) {
+    private static void parse(String line, Map<String, Ingredient> ingredients) {
 
         var parts = line.split("[:,]*[\\s]+");
 
         var ingredient = Ingredient.builder()
-                .name(parts[0].replace(":", ""))
+                .name(parts[0])
                 .capacity(Integer.parseInt(parts[2]))
                 .durability(Integer.parseInt(parts[4]))
                 .flavor(Integer.parseInt(parts[6]))
@@ -35,6 +40,6 @@ public class CookieRecipeOptimization {
                 .calories(Integer.parseInt(parts[10]))
                 .build();
 
-        ingredients.add(ingredient);
+        ingredients.put(parts[0], ingredient);
     }
 }

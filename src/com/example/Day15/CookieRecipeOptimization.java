@@ -11,7 +11,7 @@ public class CookieRecipeOptimization {
     @SneakyThrows
     public static void main(String[] args) {
 
-        var url = CookieRecipeOptimization.class.getResource("/ingredients_for_test.txt");
+        var url = CookieRecipeOptimization.class.getResource("/ingredients.txt");
         var path = Paths.get(Objects.requireNonNull(url).toURI());
 
         Map<String, Ingredient> ingredients = new TreeMap<>();
@@ -19,10 +19,12 @@ public class CookieRecipeOptimization {
 
         ingredients.entrySet().forEach(System.out::println);
 
-        var recipe = Recipe.builder()
-                .ingredient(ingredients.get("Butterscotch"), 44)
-                .ingredient(ingredients.get("Cinnamon"), 56)
-                .build();
+        var recipe = new Recipe(Map.of(
+                ingredients.get("Sprinkles"), 25,
+                ingredients.get("Sugar"), 30,
+                ingredients.get("Frosting"), 20,
+                ingredients.get("PeanutButter"), 25
+        ));
 
         System.out.println("score: " + recipe.score());
     }

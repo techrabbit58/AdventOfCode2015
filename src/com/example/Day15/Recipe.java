@@ -1,18 +1,33 @@
 package com.example.Day15;
 
-import lombok.Builder;
-import lombok.Data;
-import lombok.Singular;
-
 import java.util.Map;
 
-@Data
-@Builder
 public class Recipe {
 
-    @Singular Map<Ingredient, Integer> ingredients;
+    Map<Ingredient, Integer> ingredients;
+
+    Recipe(Map<Ingredient, Integer> ingredients) {
+        this.ingredients = ingredients;
+    }
 
     int score() {
-        return 0;
+
+        var tsSum = ingredients.values().stream().reduce(Integer::sum).orElse(0);
+        if (tsSum != 100) throw new RuntimeException("mass of ingredients must be 100 teaspoons, was '" + tsSum + "'");
+
+        var capacity = ingredients.entrySet().stream()
+                .map(e -> e.getValue() * e.getKey().getCapacity())
+                .reduce(Integer::sum).filter(i -> (i >= 0)).orElse(0);
+        var durability = ingredients.entrySet().stream()
+                .map(e -> e.getValue() * e.getKey().getDurability())
+                .reduce(Integer::sum).filter(i -> (i >= 0)).orElse(0);
+        var flavor = ingredients.entrySet().stream()
+                .map(e -> e.getValue() * e.getKey().getFlavor())
+                .reduce(Integer::sum).filter(i -> (i >= 0)).orElse(0);
+        var texture = ingredients.entrySet().stream()
+                .map(e -> e.getValue() * e.getKey().getTexture())
+                .reduce(Integer::sum).filter(i -> (i >= 0)).orElse(0);
+
+        return capacity * durability * flavor * texture;
     }
 }

@@ -11,12 +11,13 @@ import java.util.Objects;
 
 public class ReindeerOlympics {
 
-    private static final int TIME_LIMIT = 2503;
+    // private static final int TIME_LIMIT = 2503;
+    private static final int TIME_LIMIT = 1000;
 
     @SneakyThrows
     public static void main(String[] args) {
 
-        var url = KnightsOfTheDinnerTable.class.getResource("/reindeer_descriptions.txt");
+        var url = KnightsOfTheDinnerTable.class.getResource("/reindeer_descriptions_for_test.txt");
         var path = Paths.get(Objects.requireNonNull(url).toURI());
 
         var reindeers = new ArrayList<Reindeer>();
@@ -26,6 +27,23 @@ public class ReindeerOlympics {
         for (var r : reindeers) maxDistance = Math.max(maxDistance, r.distanceAfter(TIME_LIMIT));
 
         System.out.println("part 1 solution = " + maxDistance);
+
+        for (var second = 0; second < TIME_LIMIT; second++) {
+            reindeers.forEach(Reindeer::tick);
+            var currentMaxDistance = 0;
+            for (var r : reindeers) currentMaxDistance = Math.max(currentMaxDistance, r.realTimeDistance());
+            for (Reindeer r : reindeers) {
+                if (r.realTimeDistance() == currentMaxDistance) r.addOnePoint();
+            }
+        }
+
+        var maxScore = 0;
+        for (var r : reindeers) {
+            System.out.println(r.name() + ", score = " + r.score());
+            maxScore = Math.max(maxScore, r.score());
+        }
+
+        System.out.println("part 2 solution = " + maxScore);
     }
 
     private static void parse(String line, List<Reindeer> reindeers) {

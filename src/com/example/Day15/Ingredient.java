@@ -2,7 +2,6 @@ package com.example.Day15;
 
 import lombok.Builder;
 import lombok.Data;
-import lombok.ToString;
 
 /**
  * E X A M P L E

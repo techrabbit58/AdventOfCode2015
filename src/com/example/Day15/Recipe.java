@@ -30,4 +30,12 @@ public class Recipe {
 
         return capacity * durability * flavor * texture;
     }
+
+    public int scoreIf500Calories() {
+
+        var calories = ingredients.entrySet().stream()
+                .map(e -> e.getValue() * e.getKey().getCalories())
+                .reduce(Integer::sum).filter(i -> (i == 500)).orElse(0);
+        return calories > 0 ? score() : 0;
+    }
 }

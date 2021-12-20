@@ -1,4 +1,4 @@
-package com.example;
+package com.example.Day05;
 
 import lombok.SneakyThrows;
 
@@ -7,12 +7,12 @@ import java.util.Objects;
 import java.util.Scanner;
 import java.util.Set;
 
-public class Day05NaughtyOrNice {
+public class NaughtyOrNice {
 
     @SneakyThrows
     public static void main(String[] args) {
 
-        var url = Day05NaughtyOrNice.class.getResource("/naughty_or_nice.txt");
+        var url = NaughtyOrNice.class.getResource("/naughty_or_nice.txt");
         var file = new File(Objects.requireNonNull(url).toURI());
         var input = new Scanner(file);
 

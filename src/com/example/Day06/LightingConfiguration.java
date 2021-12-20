@@ -1,4 +1,4 @@
-package com.example;
+package com.example.Day06;
 
 import lombok.Builder;
 import lombok.SneakyThrows;
@@ -7,7 +7,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Objects;
 
-public class Day06LightingConfiguration {
+public class LightingConfiguration {
 
     @SneakyThrows
     public static void main(String[] args) {
@@ -15,7 +15,7 @@ public class Day06LightingConfiguration {
         var part1Lights = new boolean[1000][1000];
         var part2Lights = new long[1000][1000];
 
-        var url = Day06LightingConfiguration.class.getResource("/lighting_instructions.txt");
+        var url = LightingConfiguration.class.getResource("/lighting_instructions.txt");
         var path = Paths.get(Objects.requireNonNull(url).toURI());
 
         Files.lines(path).forEach(line -> {

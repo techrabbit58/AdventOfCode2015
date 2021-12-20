@@ -1,9 +1,9 @@
-package com.example;
+package com.example.Day10;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class Day10LookAndSay {
+public class LookAndSay {
 
     public static void main(String[] args) {
 

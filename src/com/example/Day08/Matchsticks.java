@@ -1,4 +1,4 @@
-package com.example;
+package com.example.Day08;
 
 import lombok.SneakyThrows;
 
@@ -8,12 +8,12 @@ import java.util.ArrayList;
 import java.util.Locale;
 import java.util.Objects;
 
-public class Day08Matchsticks {
+public class Matchsticks {
 
     @SneakyThrows
     public static void main(String[] args) {
 
-        var url = Day08Matchsticks.class.getResource("/string_literals.txt");
+        var url = Matchsticks.class.getResource("/string_literals.txt");
         var path = Paths.get(Objects.requireNonNull(url).toURI());
 
         var literalSizes = new ArrayList<Integer>();

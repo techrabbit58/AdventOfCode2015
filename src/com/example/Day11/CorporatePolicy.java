@@ -1,8 +1,8 @@
-package com.example;
+package com.example.Day11;
 
 import java.util.regex.Pattern;
 
-public class Day11CorporatePolicy {
+public class CorporatePolicy {
 
     public static void main(String[] args) {
 

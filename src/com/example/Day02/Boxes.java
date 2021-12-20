@@ -1,4 +1,4 @@
-package com.example;
+package com.example.Day02;
 
 import lombok.SneakyThrows;
 
@@ -6,12 +6,12 @@ import java.io.File;
 import java.util.Objects;
 import java.util.Scanner;
 
-public class Day02Boxes {
+public class Boxes {
 
     @SneakyThrows
     public static void main(String[] args) {
 
-        var app = new Day02Boxes("/boxes.txt");
+        var app = new Boxes("/boxes.txt");
         var scanner = new Scanner(app.input);
 
         var totalPaper = 0L;
@@ -59,7 +59,7 @@ public class Day02Boxes {
     private final File input;
 
     @SneakyThrows
-    public Day02Boxes(final String fileName) {
+    public Boxes(final String fileName) {
 
         input = new File(Objects.requireNonNull(getClass().getResource(fileName)).toURI());
     }

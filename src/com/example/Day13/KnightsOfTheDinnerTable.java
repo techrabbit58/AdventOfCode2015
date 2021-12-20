@@ -6,7 +6,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.*;
 
-import static com.example.Day09FindShortestLongestPath.permute;
+import static com.example.Day09.FindShortestLongestPath.permute;
 
 public class KnightsOfTheDinnerTable {
 

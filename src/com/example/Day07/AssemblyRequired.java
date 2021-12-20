@@ -1,4 +1,4 @@
-package com.example;
+package com.example.Day07;
 
 import lombok.Builder;
 import lombok.SneakyThrows;
@@ -10,12 +10,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-public class Day07AssemblyRequired {
+public class AssemblyRequired {
 
     @SneakyThrows
     public static void main(String[] args) {
 
-        var url = Day07AssemblyRequired.class.getResource("/assembly_instructions.txt");
+        var url = AssemblyRequired.class.getResource("/assembly_instructions.txt");
         var path = Paths.get(Objects.requireNonNull(url).toURI());
 
         Map<String, Instruction> wires = new HashMap<>();

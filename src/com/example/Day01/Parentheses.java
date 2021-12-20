@@ -1,4 +1,4 @@
-package com.example;
+package com.example.Day01;
 
 import lombok.SneakyThrows;
 
@@ -6,12 +6,12 @@ import java.io.File;
 import java.util.Objects;
 import java.util.Scanner;
 
-public class Day01Parentheses {
+public class Parentheses {
 
     @SneakyThrows
     public static void main(String[] args) {
 
-        var app = new Day01Parentheses("/parentheses.txt");
+        var app = new Parentheses("/parentheses.txt");
         var scanner = new Scanner(app.input);
 
         var floor = 0L;
@@ -42,7 +42,7 @@ public class Day01Parentheses {
     private final File input;
 
     @SneakyThrows
-    public Day01Parentheses(final String fileName) {
+    public Parentheses(final String fileName) {
 
         input = new File(Objects.requireNonNull(getClass().getResource(fileName)).toURI());
     }

@@ -1,4 +1,4 @@
-package com.example;
+package com.example.Day03;
 
 import lombok.SneakyThrows;
 
@@ -7,9 +7,9 @@ import java.nio.file.Files;
 import java.util.HashSet;
 import java.util.Objects;
 
-public class Day03Directions {
+public class Directions {
 
-    private static record Waypoint(long x, long y) {
+    private record Waypoint(long x, long y) {
 
         Waypoint goTo(char direction) {
             return switch (direction) {
@@ -25,7 +25,7 @@ public class Day03Directions {
     @SneakyThrows
     public static void main(String[] args) {
 
-        var file = new File(Objects.requireNonNull(Day03Directions.class.getResource("/directions.txt")).toURI());
+        var file = new File(Objects.requireNonNull(Directions.class.getResource("/directions.txt")).toURI());
         var directions = Files.readString(file.toPath());
 
         var suppliedHouses = new HashSet<Waypoint>();

@@ -1,4 +1,4 @@
-package com.example;
+package com.example.Day09;
 
 import lombok.SneakyThrows;
 
@@ -6,12 +6,12 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.*;
 
-public class Day09FindShortestLongestPath {
+public class FindShortestLongestPath {
 
     @SneakyThrows
     public static void main(String[] args) {
 
-        var url = Day09FindShortestLongestPath.class.getResource("/distances.txt");
+        var url = FindShortestLongestPath.class.getResource("/distances.txt");
         var path = Paths.get(Objects.requireNonNull(url).toURI());
 
         Map<String, Integer> distances = new HashMap<>();

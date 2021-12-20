@@ -1,11 +1,11 @@
-package com.example;
+package com.example.Day04;
 
 import lombok.SneakyThrows;
 
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 
-public class Day04DigestMining {
+public class DigestMining {
 
     @SneakyThrows
     public static void main(String[] args) {

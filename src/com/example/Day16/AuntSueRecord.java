@@ -37,6 +37,14 @@ public class AuntSueRecord {
         return _inventory.getOrDefault(key, value) == value;
     }
 
+    public boolean propertyMatchesGreater(String key, int value) {
+        return _inventory.getOrDefault(key, value + 1) > value;
+    }
+
+    public boolean propertyMatchesFewer(String key, int value) {
+        return _inventory.getOrDefault(key, value - 1) < value;
+    }
+
     public int sueId() {
         return _sueId;
     }

@@ -13,7 +13,7 @@ public class AuntSue {
         var sueRecords = new ArrayList<AuntSueRecord>();
         input.forEach(line -> parse(line, sueRecords));
 
-        var sue = sueRecords.stream()
+        var sueCandidates = sueRecords.stream()
                 .filter(rec -> rec.propertyMatches("children", 3))
                 .filter(rec -> rec.propertyMatches("cats", 7))
                 .filter(rec -> rec.propertyMatches("samoyeds", 2))
@@ -26,10 +26,33 @@ public class AuntSue {
                 .filter(rec -> rec.propertyMatches("perfumes", 1))
                 .toList();
 
-        sue.forEach(System.out::println);
-        System.out.println();
+        assertOnlyOneSue(sueCandidates);
+        System.out.println("part 1 solution: " + sueCandidates.get(0).sueId());
 
-        System.out.println("part 1 solution: " + sue.get(0).sueId());
+        sueCandidates = sueRecords.stream()
+                .filter(rec -> rec.propertyMatches("children", 3))
+                .filter(rec -> rec.propertyMatchesGreater("cats", 7))
+                .filter(rec -> rec.propertyMatches("samoyeds", 2))
+                .filter(rec -> rec.propertyMatchesFewer("pomeranians", 3))
+                .filter(rec -> rec.propertyMatches("akitas", 0))
+                .filter(rec -> rec.propertyMatches("vizslas", 0))
+                .filter(rec -> rec.propertyMatchesFewer("goldfish", 5))
+                .filter(rec -> rec.propertyMatchesGreater("trees", 3))
+                .filter(rec -> rec.propertyMatches("cars", 2))
+                .filter(rec -> rec.propertyMatches("perfumes", 1))
+                .toList();
+
+        assertOnlyOneSue(sueCandidates);
+        System.out.println("part 2 solution: " + sueCandidates.get(0).sueId());
+    }
+
+    private static void assertOnlyOneSue(List<AuntSueRecord> sueCandidates) {
+
+        if (sueCandidates.size() != 1) {
+            sueCandidates.forEach(System.out::println);
+            System.out.println();
+            throw new RuntimeException("something went wrong: sue count is '" + sueCandidates.size() + "'");
+        }
     }
 
     private static void parse(String line, List<AuntSueRecord> sueRecords) {

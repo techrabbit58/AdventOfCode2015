@@ -1,5 +1,6 @@
 package com.example.Day12;
 
+import com.example.Helpers.Storage;
 import lombok.ToString;
 
 public class AbacusFramework {
@@ -11,10 +12,10 @@ public class AbacusFramework {
         var storage = new Storage("/peculiar_storage.json");
 
         noRed = false;
-        System.out.println("part 1 solution = " + recursiveBalance(storage.getPeculiarStorage()));
+        System.out.println("part 1 solution = " + recursiveBalance(storage.getMemory()));
 
         noRed = true;
-        System.out.println("part 2 solution = " + recursiveBalance(storage.getPeculiarStorage()));
+        System.out.println("part 2 solution = " + recursiveBalance(storage.getMemory()));
     }
 
     private static int recursiveBalance(String text) {

@@ -1,5 +1,6 @@
 package com.example.Day15;
 
+import com.example.Helpers.IntPartitioner;
 import lombok.SneakyThrows;
 
 import java.nio.file.Files;

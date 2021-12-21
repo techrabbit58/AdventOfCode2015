@@ -1,4 +1,4 @@
-package com.example.Day12;
+package com.example.Helpers;
 
 import lombok.NonNull;
 import lombok.SneakyThrows;
@@ -12,14 +12,14 @@ import java.util.function.Consumer;
 
 public class Storage implements Iterable<String> {
 
-    private final String peculiarStorage;
+    private final String memory;
 
     @SneakyThrows
     public Storage(@NonNull final String fileName) {
 
         var uri = Objects.requireNonNull(getClass().getResource(fileName)).toURI();
         var path = Paths.get(uri);
-        peculiarStorage = Files.readString(path);
+        memory = Files.readString(path);
     }
 
     @Override
@@ -31,12 +31,12 @@ public class Storage implements Iterable<String> {
 
             @Override
             public boolean hasNext() {
-                return index < peculiarStorage.length();
+                return index < memory.length();
             }
 
             @Override
             public String next() {
-                return String.valueOf(peculiarStorage.charAt(index++));
+                return String.valueOf(memory.charAt(index++));
             }
         };
     }
@@ -51,7 +51,7 @@ public class Storage implements Iterable<String> {
         return Iterable.super.spliterator();
     }
 
-    public String getPeculiarStorage() {
-        return peculiarStorage;
+    public String getMemory() {
+        return memory;
     }
 }

@@ -1,9 +1,12 @@
 package com.example.Day17;
 
+import com.example.Helpers.IntCombinations;
 import lombok.SneakyThrows;
 
 import java.nio.file.Paths;
 import java.util.*;
+
+import static com.example.Helpers.Assertions.assertEquals;
 
 public class TooMuchEggnog {
 
@@ -18,10 +21,6 @@ public class TooMuchEggnog {
         result = solution(150, "/container_sizes.txt");
         System.out.println("part 1 solution: " + result[0]);
         System.out.println("part 2 solution: " + result[1]);
-    }
-
-    private static <T> void assertEquals(T expected, T actual) {
-        if (!expected.equals(actual)) throw new AssertionError("part 1 test failed");
     }
 
     @SneakyThrows

@@ -1,16 +1,10 @@
-package com.example.Day15;
+package com.example.Helpers;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
 public class IntPartitioner implements Iterator<List<Integer>> {
-
-    public static void main(String[] args) {
-
-        var p = new IntPartitioner(100, 2);
-        while (p.hasNext()) System.out.println(p.next());
-    }
 
     private boolean _terminated;
     private final int _number;

@@ -18,9 +18,9 @@ public class MedicineForRudolph {
 
         // T E S T   P A R T 2
         Assertions.assertEquals(3,
-                generateMedicineMolecule("e => H\ne => O\nH => HO\nH => OH\nO => HH\n\nHOH"));
+                synthesize("e => H\ne => O\nH => HO\nH => OH\nO => HH\n\nHOH"));
         Assertions.assertEquals(6,
-                generateMedicineMolecule("e => H\ne => O\nH => HO\nH => OH\nO => HH\n\nHOHOHO"));
+                synthesize("e => H\ne => O\nH => HO\nH => OH\nO => HH\n\nHOHOHO"));
 
         // S O L U T I O N   P A R T 1
 
@@ -30,7 +30,7 @@ public class MedicineForRudolph {
         var part1Solution = calibrate(Files.readString(path));
         System.out.println("part 1 solution: " + part1Solution);
 
-        var part2Solution = generateMedicineMolecule(Files.readString(path));
+        var part2Solution = 0;
         System.out.println("part 2 solution: " + part2Solution);
     }
 
@@ -45,7 +45,7 @@ public class MedicineForRudolph {
         return molecules.size();
     }
 
-    private static int generateMedicineMolecule(String input) {
+    private static int synthesize(String input) {
 
         List<Pair> grammar = new ArrayList<>();
         var word = parse(input, grammar);
@@ -60,27 +60,15 @@ public class MedicineForRudolph {
             var words = molecules.get(counter - 1);
             var newMolecules = new HashSet<String>();
             for (var m : words) findDistinctMolecules(grammar, m, newMolecules);
-            var maxCommonPrefix = 0;
-            for (var s : newMolecules) maxCommonPrefix = Integer.max(maxCommonPrefix, commonPrefix(word, s));
-            Set<String> candidates = new HashSet<>();
-            for (var s : newMolecules) if (maxCommonPrefix == commonPrefix(s, word)) candidates.add(s);
-            molecules.add((candidates.size() < 4) ? newMolecules : candidates);
-            System.out.println("counter=" + counter +
-                    ", commonPrefix=" + maxCommonPrefix + ", numCandidates=" + candidates.size());
+            molecules.add(newMolecules);
+            System.out.println("counter=" + counter + ", numMolecules=" + newMolecules.size());
         }
 
         return counter;
     }
 
-    private static int commonPrefix(String s, String t) {
-
-        var sLen = s.length();
-        var tLen = t.length();
-        var len = Math.min(sLen, tLen);
-
-        for (var i = 0; i < len; i++) if (s.charAt(i) != t.charAt(i)) return i + 1;
-
-        return len;
+    private static int analyze(String input) {
+        return 0;
     }
 
     private static void findDistinctMolecules(List<Pair> grammar, String word, Set<String> molecules) {

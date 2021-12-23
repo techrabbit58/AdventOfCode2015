@@ -36,7 +36,7 @@ public class MedicineForRudolph {
 
     private static int calibrate(String input) {
 
-        Set<String> grammar = new HashSet<>();
+        List<Pair> grammar = new ArrayList<>();
         var word = parse(input, grammar);
 
         Set<String> molecules = new HashSet<>();
@@ -47,7 +47,7 @@ public class MedicineForRudolph {
 
     private static int generateMedicineMolecule(String input) {
 
-        Set<String> grammar = new HashSet<>();
+        List<Pair> grammar = new ArrayList<>();
         var word = parse(input, grammar);
 
         int counter = 0;
@@ -79,24 +79,24 @@ public class MedicineForRudolph {
         var len = Math.min(sLen, tLen);
 
         for (var i = 0; i < len; i++) if (s.charAt(i) != t.charAt(i)) return i + 1;
+
         return len;
     }
 
-    private static void findDistinctMolecules(Set<String> grammar, String word, Set<String> molecules) {
-        grammar.forEach(line -> {
-            var rule = line.split(" => ");
+    private static void findDistinctMolecules(List<Pair> grammar, String word, Set<String> molecules) {
+        grammar.forEach(pair -> {
             var index = 0;
-            while ((index = word.indexOf(rule[0], index)) >= 0) {
+            while ((index = word.indexOf(pair.a(), index)) >= 0) {
                 var head = word.substring(0, index);
-                var tail = word.substring(index + rule[0].length());
-                var newMolecule = head + rule[1] + tail;
+                var tail = word.substring(index + pair.a().length());
+                var newMolecule = head + pair.b() + tail;
                 molecules.add(newMolecule);
-                index += rule[0].length();
+                index += pair.a().length();
             }
         });
     }
 
-    private static String parse(String input, Set<String> grammar) {
+    private static String parse(String input, List<Pair> grammar) {
 
         String word;
 
@@ -104,7 +104,7 @@ public class MedicineForRudolph {
         while (scanner.hasNextLine()) {
             var line = scanner.nextLine();
             if (line.length() == 0) break;
-            grammar.add(line);
+            grammar.add(Pair.fromString(line));
         }
 
         Assertions.assertTrue(scanner.hasNextLine(), "scanner: missing word");

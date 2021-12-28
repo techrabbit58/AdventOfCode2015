@@ -17,10 +17,8 @@ public class MedicineForRudolph {
         Assertions.assertEquals(7, calibrate("H => HO\nH => OH\nO => HH\n\nHOHOHO"));
 
         // T E S T   P A R T 2
-        Assertions.assertEquals(3,
-                synthesize("e => H\ne => O\nH => HO\nH => OH\nO => HH\n\nHOH"));
-        Assertions.assertEquals(6,
-                synthesize("e => H\ne => O\nH => HO\nH => OH\nO => HH\n\nHOHOHO"));
+        Assertions.assertEquals(3, analyze("e => H\ne => O\nH => HO\nH => OH\nO => HH\n\nHOH"));
+        Assertions.assertEquals(6, analyze("e => H\ne => O\nH => HO\nH => OH\nO => HH\n\nHOHOHO"));
 
         // S O L U T I O N   P A R T 1
 
@@ -30,7 +28,7 @@ public class MedicineForRudolph {
         var part1Solution = calibrate(Files.readString(path));
         System.out.println("part 1 solution: " + part1Solution);
 
-        var part2Solution = 0;
+        var part2Solution = analyze(Files.readString(path));
         System.out.println("part 2 solution: " + part2Solution);
     }
 
@@ -45,30 +43,38 @@ public class MedicineForRudolph {
         return molecules.size();
     }
 
-    private static int synthesize(String input) {
+    /**
+     * For this I needed some inspiration. This blog post helped me a lot:
+     * https://eddmann.com/posts/advent-of-code-2015-day-19-medicine-for-rudolph/
+     * Kudos goes to Edd Mann, Developer.
+     */
+    private static int analyze(String input) {
 
         List<Pair> grammar = new ArrayList<>();
         var word = parse(input, grammar);
 
-        int counter = 0;
-        List<Set<String>> molecules = new ArrayList<>();
-        molecules.add(new HashSet<>());
-        molecules.get(0).add("e");
+        grammar = grammar.stream()
+                .map(p -> new Pair(p.b(), p.a()))
+                .sorted(Comparator.comparing(p -> -p.a().length()))
+                .toList();
 
-        while (!molecules.get(counter).contains(word)) {
+        int counter = 0;
+        var variant = word;
+
+        while (!variant.equals("e")) {
             counter += 1;
-            var words = molecules.get(counter - 1);
-            var newMolecules = new HashSet<String>();
-            for (var m : words) findDistinctMolecules(grammar, m, newMolecules);
-            molecules.add(newMolecules);
-            System.out.println("counter=" + counter + ", numMolecules=" + newMolecules.size());
+            for (var rule : grammar) {
+                var index = variant.indexOf(rule.a());
+                if (index >= 0) {
+                    var head = variant.substring(0, index);
+                    var tail = variant.substring(index + rule.a().length());
+                    variant = head + rule.b() + tail;
+                    break;
+                }
+            }
         }
 
         return counter;
-    }
-
-    private static int analyze(String input) {
-        return 0;
     }
 
     private static void findDistinctMolecules(List<Pair> grammar, String word, Set<String> molecules) {

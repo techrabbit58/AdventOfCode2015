@@ -1,6 +1,7 @@
 package com.example.Day19;
 
 import com.example.Helpers.Assertions;
+import com.example.Helpers.Miscellaneous;
 import lombok.SneakyThrows;
 
 import java.nio.file.Files;
@@ -11,6 +12,8 @@ public class MedicineForRudolph {
 
     @SneakyThrows
     public static void main(String[] args) {
+
+        Miscellaneous.printHeading("Day 19: Medicine for Rudolph");
 
         // T E S T   P A R T 1
         Assertions.assertEquals(4, calibrate("H => HO\nH => OH\nO => HH\n\nHOH"));

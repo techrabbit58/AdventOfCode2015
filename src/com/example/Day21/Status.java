@@ -36,11 +36,26 @@ public class Status {
         return statusBuilder.build();
     }
 
-    public void buyWeapon(String itemName) {
+    public void getWeapon(String weapon) {
+        update(itemShop.getWeaponByName(weapon));
+    }
 
-        var item = itemShop.getWeapon(itemName);
-        damage += item.damage();
-        armor += item.armor();
+    public void getArmor(String armor) {
+        update(itemShop.getArmorByName(armor));
+    }
+
+    public void getRings(String rings) {
+
+        var parts = rings.split("/");
+
+        update(itemShop.getRingByName(parts[0]));
+        if (parts.length == 2) update(itemShop.getRingByName(parts[1]));
+    }
+
+    private void update(Item item) {
+
         debt += item.cost();
+        armor += item.armor();
+        damage += item.damage();
     }
 }

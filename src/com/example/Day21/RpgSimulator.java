@@ -3,10 +3,12 @@ package com.example.Day21;
 import com.example.Helpers.Assertions;
 import com.example.Helpers.Miscellaneous;
 
+import java.util.ArrayList;
+
 public class RpgSimulator {
 
-    private static final Status PUZZLE_INPUT = Status.fromString("Hit Points: 100\nDamage: 8\nArmor: 2");
-    private static final Status TEST_INPUT = Status.fromString("Hit Points: 12\nDamage: 7\nArmor: 2");
+    private static final String PUZZLE_INPUT = "Hit Points: 100\nDamage: 8\nArmor: 2";
+    private static final String TEST_INPUT = "Hit Points: 12\nDamage: 7\nArmor: 2";
 
     public static void main(String[] args) {
 
@@ -14,28 +16,58 @@ public class RpgSimulator {
 
         // T E S T   P A R T 1
 
+        var boss = Status.fromString(TEST_INPUT);
         var player = new Status("Player", 8, 5, 5, 0);
+        var itemShop = new ItemShop();
 
-        Status winner = getWinner(player, TEST_INPUT);
+        Status winner = simulateOneFight(player, Status.fromString(TEST_INPUT));
         Assertions.assertEquals(player, winner);
 
         // S O L U T I O N   P A R T 1
 
-        var boss = PUZZLE_INPUT;
+        var debtIfWon = new ArrayList<Integer>();
+        var debtIfNotWon = new ArrayList<Integer>();
 
-        player.setHitPoints(100);
-        player.setDamage(0);
-        player.setArmor(0);
+        var weapons = itemShop.weaponNames();
+        while (weapons.hasNext()) {
 
-        player.buyWeapon("Greataxe");
-        winner = getWinner(player, boss);
-        System.out.println(winner.getName() + " won!");
-        System.out.println("Boss=" + boss + ", Player=" + player);
+            var nextWeapon = weapons.next();
 
-        System.out.println("part 1 solution: " + 0);
+            var armors = itemShop.armorNames();
+            while (armors.hasNext()) {
+
+                var nextArmor = armors.next();
+
+                var rings = itemShop.ringNames();
+                while (rings.hasNext()) {
+
+                    boss = Status.fromString(PUZZLE_INPUT);
+                    player = nextPlayer(nextWeapon, nextArmor, rings.next());
+
+                    simulateOneFight(player, boss);
+
+                    if (player.getHitPoints() > 0) debtIfWon.add(player.getDebt());
+                    if (boss.getHitPoints() > 0) debtIfNotWon.add(player.getDebt());
+                }
+            }
+        }
+
+        System.out.println("part 1 solution: " + debtIfWon.stream().reduce(Integer::min).orElse(Integer.MAX_VALUE));
+        System.out.println("part 2 solution: " + debtIfNotWon.stream().reduce(Integer::max).orElse(Integer.MIN_VALUE));
     }
 
-    private static Status getWinner(Status player, Status opponent) {
+    private static Status nextPlayer(String nextWeapon, String nextArmor, String nextRings) {
+
+        var player = Status.builder().name("Player").hitPoints(100).build();
+
+        player.getWeapon(nextWeapon);
+        player.getArmor(nextArmor);
+        player.getRings(nextRings);
+
+        return player;
+    }
+
+    private static Status simulateOneFight(Status player, Status opponent) {
         var attacker = player;
         var defender = opponent;
 

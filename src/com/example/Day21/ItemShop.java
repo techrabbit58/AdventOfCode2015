@@ -1,6 +1,10 @@
 package com.example.Day21;
 
+import com.example.Helpers.IntCombinations;
+
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 public class ItemShop {
@@ -21,6 +25,7 @@ public class ItemShop {
 
         articles.put("Armor", new HashMap<>());
 
+        articles.get("Armor").put("No Armor", new Item(0, 0, 0));
         articles.get("Armor").put("Leather", new Item(13, 0, 1));
         articles.get("Armor").put("Chainmail", new Item(31, 0, 2));
         articles.get("Armor").put("Splintmail", new Item(53, 0, 3));
@@ -37,7 +42,66 @@ public class ItemShop {
         articles.get("Rings").put("Defense +3", new Item(80, 0, 3));
     }
 
-    public Item getWeapon(String itemName) {
-        return articles.get("Weapons").get(itemName);
+    public Iterator<String> weaponNames() {
+        return List.copyOf(articles.get("Weapons").keySet()).listIterator();
+    }
+
+    public Item getWeaponByName(String weaponName) {
+        return articles.get("Weapons").get(weaponName);
+    }
+
+    public Item getArmorByName(String armorName) {
+        return articles.get("Armor").get(armorName);
+    }
+
+    public Iterator<String> armorNames() {
+        return List.copyOf(articles.get("Armor").keySet()).listIterator();
+    }
+
+    public Iterator<String> ringNames() {
+        return new Iterator<>() {
+
+            boolean terminated = false;
+            int numRings = 0;
+            final List<String> ringNames = List.copyOf(articles.get("Rings").keySet());
+            int cursor;
+            List<int[]> combined;
+
+            @Override
+            public boolean hasNext() {
+
+                return !terminated;
+            }
+
+            @Override
+            public String next() {
+
+                if (numRings == 0) {
+                    numRings = 1;
+                    cursor = 0;
+                    return "None";
+                } else if (numRings == 1) {
+                    if (cursor == ringNames.size()) {
+                        numRings = 2;
+                        combined = IntCombinations.generate(ringNames.size(), 2);
+                        cursor = 0;
+                        var current = combined.get(cursor++);
+                        return ringNames.get(current[0]) + "/" + ringNames.get(current[1]);
+                    }
+                    return ringNames.get(cursor++);
+                } else {
+                    if (cursor == combined.size() - 1) terminated = true;
+                    if (cursor < combined.size()) {
+                        var current = combined.get(cursor++);
+                        return ringNames.get(current[0]) + "/" + ringNames.get(current[1]);
+                    }
+                }
+                return "";
+            }
+        };
+    }
+
+    public Item getRingByName(String ringName) {
+        return articles.get("Rings").getOrDefault(ringName, new Item(0, 0, 0));
     }
 }

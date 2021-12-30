@@ -16,11 +16,11 @@ public class RpgSimulator {
 
         // T E S T   P A R T 1
 
-        var boss = Status.fromString(TEST_INPUT);
-        var player = new Status("Player", 8, 5, 5, 0);
+        var boss = Participant.fromString(TEST_INPUT);
+        var player = new Participant("Player", 8, 5, 5, 0);
         var itemShop = new ItemShop();
 
-        Status winner = simulateOneFight(player, Status.fromString(TEST_INPUT));
+        Participant winner = simulateOneFight(player, Participant.fromString(TEST_INPUT));
         Assertions.assertEquals(player, winner);
 
         // S O L U T I O N   P A R T 1
@@ -41,7 +41,7 @@ public class RpgSimulator {
                 var rings = itemShop.ringNames();
                 while (rings.hasNext()) {
 
-                    boss = Status.fromString(PUZZLE_INPUT);
+                    boss = Participant.fromString(PUZZLE_INPUT);
                     player = nextPlayer(nextWeapon, nextArmor, rings.next());
 
                     simulateOneFight(player, boss);
@@ -56,9 +56,9 @@ public class RpgSimulator {
         System.out.println("part 2 solution: " + debtIfNotWon.stream().reduce(Integer::max).orElse(Integer.MIN_VALUE));
     }
 
-    private static Status nextPlayer(String nextWeapon, String nextArmor, String nextRings) {
+    private static Participant nextPlayer(String nextWeapon, String nextArmor, String nextRings) {
 
-        var player = Status.builder().name("Player").hitPoints(100).build();
+        var player = Participant.builder().name("Player").hitPoints(100).build();
 
         player.getWeapon(nextWeapon);
         player.getArmor(nextArmor);
@@ -67,7 +67,7 @@ public class RpgSimulator {
         return player;
     }
 
-    private static Status simulateOneFight(Status player, Status opponent) {
+    private static Participant simulateOneFight(Participant player, Participant opponent) {
         var attacker = player;
         var defender = opponent;
 
@@ -83,11 +83,11 @@ public class RpgSimulator {
         return hasLost(opponent) ? player : opponent;
     }
 
-    private static boolean hasLost(Status player) {
+    private static boolean hasLost(Participant player) {
         return player.getHitPoints() <= 0;
     }
 
-    private static void attack(Status attacker, Status defender) {
+    private static void attack(Participant attacker, Participant defender) {
 
         var deal = attacker.getDamage() - defender.getArmor();
         if (deal <= 0) deal = 1;

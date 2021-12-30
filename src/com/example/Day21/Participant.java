@@ -6,7 +6,7 @@ import java.util.Scanner;
 
 @Data
 @Builder
-public class Status {
+public class Participant {
 
     @Builder.Default private String name = "Boss";
     @Builder.Default private int hitPoints = 0;
@@ -16,10 +16,10 @@ public class Status {
 
     private static ItemShop itemShop = new ItemShop();
 
-    public static Status fromString(String s) {
+    public static Participant fromString(String s) {
 
         var scanner = new Scanner(s);
-        var statusBuilder = Status.builder();
+        var statusBuilder = Participant.builder();
 
         while (scanner.hasNextLine()) {
 

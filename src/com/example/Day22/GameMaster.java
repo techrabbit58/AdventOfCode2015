@@ -50,8 +50,10 @@ class GameMaster {
     private void doActiveEffects() {
 
         activeEffects.entrySet().forEach(e -> {
-            System.out.println("k=" + e.getKey() + ", v=" + e.getValue());
+            var spell = globals.getSpellByName(e.getKey().spell());
+            System.out.print(spell.getName() + " deals " + spell.getEffectDamage() + " damage");
             e.setValue(e.getValue() - 1);
+            System.out.println("; its timer is now " + e.getValue() + ".");
         });
     }
 

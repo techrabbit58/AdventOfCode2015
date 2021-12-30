@@ -10,22 +10,15 @@ public class WizardSimulator {
 
         var globals = Globals.getInstance();
 
-        globals.getSpells().forEach(n -> System.out.println(globals.getSpellByName(n)));
-
         var player = new Wizard(globals.TEST_INPUT_PLAYER[0]);
-        player.addSpell(globals.getSpellByName("Poison"));
+        player.addSpellToScript("Poison");
 
         var boss = new Boss(globals.TEST_INPUT_BOSS[0]);
 
-        System.out.println();
-        System.out.println(player);
-        System.out.println(boss);
+        var gameMaster = new GameMaster();
+        gameMaster.addPlayer(player);
+        gameMaster.addPlayer(boss);
 
-        player.attack(boss);
-        boss.attack(player);
-
-        System.out.println();
-        System.out.println(player);
-        System.out.println(boss);
+        gameMaster.run();
     }
 }

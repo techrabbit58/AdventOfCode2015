@@ -1,8 +1,5 @@
 package com.example.Day22;
 
-import lombok.ToString;
-
-@ToString
 public final class Boss implements Player {
 
     private final Participant self;
@@ -29,10 +26,14 @@ public final class Boss implements Player {
     @Override
     public void attack(Player opponent) {
 
-        System.out.println("-- " + self.name + " turn --");
         var damage = self.get("Damage") - opponent.get("Armor");
         if (damage < 1) damage = 1;
         System.out.println(self.name + " attacks for " + damage + " damage.");
         opponent.set("Hit Points", opponent.get("Hit Points") - damage);
+    }
+
+    @Override
+    public String toString() {
+        return "- " + self.name + " has " + self.get("Hit Points") + " hit points";
     }
 }

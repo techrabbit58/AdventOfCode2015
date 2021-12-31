@@ -17,6 +17,20 @@ public class WizardSimulator {
 
         var battleState = parse(global.TEST_INPUT_PLAYER[0], global.TEST_INPUT_BOSS[0]);
 
+        var spellsToGo = new Spell[]{
+                global.getSpellByName("Poison"),
+                global.getSpellByName("Magic Missile")
+        };
+
+        System.out.println(battleState);
+        System.out.println("-".repeat(72));
+
+        for (var spell : spellsToGo) {
+            while (battleState.getAvailableSpells().contains(spell)) battleState = battleState.roundOfBattle(spell);
+            if (battleState.hasBattleEnded()) break;
+        }
+
+        System.out.println("-".repeat(72));
         System.out.println(battleState);
     }
 

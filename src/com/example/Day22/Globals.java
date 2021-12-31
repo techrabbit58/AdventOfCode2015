@@ -1,5 +1,7 @@
 package com.example.Day22;
 
+import java.util.Arrays;
+
 final class Globals {
 
     private static final Globals _instance = new Globals();
@@ -31,4 +33,9 @@ final class Globals {
             Spell.builder().name("Poison").cost(173).effectDamage(3).effectDuration(6).build(),
             Spell.builder().name("Recharge").cost(229).effectMana(101).effectDuration(5).build()
     };
+
+    public Spell getSpellByName(String spellName) {
+
+        return Arrays.stream(spells).filter(spell -> spellName.equals(spell.getName())).findFirst().orElse(null);
+    }
 }

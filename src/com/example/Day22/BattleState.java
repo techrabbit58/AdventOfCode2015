@@ -2,8 +2,8 @@ package com.example.Day22;
 
 import lombok.ToString;
 
+import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 @ToString(exclude = {"global", "activeEffects"})
@@ -15,7 +15,7 @@ public class BattleState {
     private int bossHealthPoints = 0;
     private int bossDamage = 0;
     private int manaSpent = 0;
-    private List<Spell> activeEffects = Collections.emptyList();
+    private List<Spell> activeEffects = new ArrayList<>();
     private final Globals global = Globals.getInstance();
 
     BattleState() {
@@ -25,13 +25,13 @@ public class BattleState {
         return bossHealthPoints <= 0 || playerHealthPoints <= 0;
     }
 
-    List<Spell> getAvailableSpells(BattleState state) {
+    List<Spell> getAvailableSpells() {
 
-        if (hasBattleEnded()) return Collections.emptyList();
+        if (hasBattleEnded()) return new ArrayList<>();
 
         return Arrays.stream(global.spells).filter(spell -> {
-            var active = state.activeEffects.stream()
-                    .filter(effect -> spell.getName().equals(effect.getName()))
+            var active = activeEffects.stream()
+                    .filter(effect -> effect.getName().equals(spell.getName()))
                     .findFirst().orElse(null);
             return spell.getCost() <= playerMana && (active == null || active.getEffectDuration() == 1);
         }).toList();
@@ -39,26 +39,42 @@ public class BattleState {
 
     BattleState enactEffects() {
 
+        System.out.println("-- Effects --");
+        System.out.println(this);
+        activeEffects.forEach(System.out::println);
+
         if (hasBattleEnded()) return this;
 
         return new BattleState()
                 .setPlayerHealthPoints(playerHealthPoints)
                 .setPlayerMana(playerMana
-                        + activeEffects.stream().map(Spell::getCost).reduce(Integer::sum).orElse(0))
+                        + activeEffects.stream().map(Spell::getHealing).reduce(Integer::sum).orElse(0))
                 .setPlayerArmor(activeEffects.stream().map(Spell::getEffectArmor).reduce(Integer::sum).orElse(0))
                 .setBossHealthPoints(bossHealthPoints
                         - activeEffects.stream().map(Spell::getEffectDamage).reduce(Integer::sum).orElse(0))
                 .setBossDamage(bossDamage)
                 .setManaSpent(manaSpent)
-                .setActiveEffects(activeEffects.stream().filter(effect -> effect.getEffectDuration() > 1).toList());
+                .setActiveEffects(activeEffects.stream()
+                        .filter(effect -> effect.getEffectDuration() > 1)
+                        .peek(effect -> effect.setEffectDuration(effect.getEffectDuration() - 1))
+                        .toList());
     }
 
     BattleState playerTurn(Spell spell) {
 
+        System.out.println("-- Player turn --");
+        System.out.println(this);
+        activeEffects.forEach(System.out::println);
+
         if (hasBattleEnded()) return this;
 
         var isSpellEffect = spell.getEffectDuration() > 1;
-        if (isSpellEffect) activeEffects.add(spell.toBuilder().build());
+
+        if (isSpellEffect) {
+            var newList = new ArrayList<>(activeEffects);
+            newList.add(spell.toBuilder().build());
+            activeEffects = newList;
+        } else System.out.println(spell);
 
         return new BattleState()
                 .setPlayerHealthPoints(playerHealthPoints + (isSpellEffect ? 0 : spell.getHealing()))
@@ -71,6 +87,10 @@ public class BattleState {
     }
 
     BattleState bossTurn() {
+
+        System.out.println("-- Boss turn --");
+        System.out.println(this);
+        activeEffects.forEach(System.out::println);
 
         if (hasBattleEnded()) return this;
 

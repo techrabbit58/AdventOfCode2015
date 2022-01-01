@@ -44,11 +44,11 @@ public class BattleState {
         activeEffects.forEach(effect -> {
             switch (effect.getName()) {
                 case "Poison" -> System.out.println(effect.getName() + " deals " + effect.getEffectDamage()
-                        + " damage; its timer is now " + effect.getEffectDuration() + ".");
+                        + " damage; its timer is now " + (effect.getEffectDuration() - 1) + ".");
                 case "Shield" -> System.out.println(effect.getName() + "'s timer is now "
-                        + effect.getEffectDuration() + ".");
+                        + (effect.getEffectDuration() - 1) + ".");
                 case "Recharge" -> System.out.println(effect.getName() + " provides " + effect.getEffectMana()
-                        + " mana; its timer is now " + effect.getEffectDuration() + ".");
+                        + " mana; its timer is now " + (effect.getEffectDuration() - 1) + ".");
                 default -> throw new RuntimeException("unexpected effect: " + effect.getName());
             }
         });
@@ -119,28 +119,28 @@ public class BattleState {
     BattleState roundOfBattle(Spell spell) {
 
         System.out.println("-- Player turn ---");
+
         System.out.println(
                 "- Player has " + playerHealthPoints + " hit points, "
                         + playerArmor + " armor, " + playerMana + " mana");
         System.out.println("- Boss has " + bossHealthPoints + " hit points");
 
         var state = enactEffects();
-
-        System.out.println();
-
         state = state.playerTurn(spell);
 
-        System.out.println("-- Boss turn --");
-        System.out.println(
-                "- Player has " + playerHealthPoints + " hit points, "
-                        + playerArmor + " armor, " + playerMana + " mana");
-        System.out.println("- Boss has " + bossHealthPoints + " hit points");
-
-        state = state.enactEffects();
-
         System.out.println();
 
+        System.out.println("-- Boss turn --");
+
+        System.out.println(
+                "- Player has " + state.playerHealthPoints + " hit points, "
+                        + state.playerArmor + " armor, " + state.playerMana + " mana");
+        System.out.println("- Boss has " + state.bossHealthPoints + " hit points");
+
+        state = state.enactEffects();
         state = state.bossTurn();
+
+        System.out.println();
 
         return state;
     }

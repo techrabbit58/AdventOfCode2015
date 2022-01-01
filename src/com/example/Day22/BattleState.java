@@ -39,11 +39,19 @@ public class BattleState {
 
     BattleState enactEffects() {
 
-        System.out.println("-- Effects --");
-        System.out.println(this);
-        activeEffects.forEach(System.out::println);
-
         if (hasBattleEnded()) return this;
+
+        activeEffects.forEach(effect -> {
+            switch (effect.getName()) {
+                case "Poison" -> System.out.println(effect.getName() + " deals " + effect.getEffectDamage()
+                        + " damage; its timer is now " + effect.getEffectDuration() + ".");
+                case "Shield" -> System.out.println(effect.getName() + "'s timer is now "
+                        + effect.getEffectDuration() + ".");
+                case "Recharge" -> System.out.println(effect.getName() + " provides " + effect.getEffectMana()
+                        + " mana; its timer is now " + effect.getEffectDuration() + ".");
+                default -> throw new RuntimeException("unexpected effect: " + effect.getName());
+            }
+        });
 
         return new BattleState()
                 .setPlayerHealthPoints(playerHealthPoints)
@@ -62,11 +70,9 @@ public class BattleState {
 
     BattleState playerTurn(Spell spell) {
 
-        System.out.println("-- Player turn --");
-        System.out.println(this);
-        activeEffects.forEach(System.out::println);
-
         if (hasBattleEnded()) return this;
+
+        System.out.print("Player casts " + spell.getName());
 
         var isSpellEffect = spell.getEffectDuration() > 1;
 
@@ -74,7 +80,15 @@ public class BattleState {
             var newList = new ArrayList<>(activeEffects);
             newList.add(spell.toBuilder().build());
             activeEffects = newList;
-        } else System.out.println(spell);
+            System.out.println(".");
+        } else {
+            switch (spell.getName()) {
+                case "Magic Missile" -> System.out.println(", dealing " + spell.getInstantDamage() + " damage.");
+                case "Drain" -> System.out.println(", dealing " + spell.getInstantDamage()
+                        + " damage, and healing " + spell.getHealing() + " hit points.");
+                default -> throw new RuntimeException("unexpected spell '" + spell.getName());
+            }
+        }
 
         return new BattleState()
                 .setPlayerHealthPoints(playerHealthPoints + (isSpellEffect ? 0 : spell.getHealing()))
@@ -88,11 +102,9 @@ public class BattleState {
 
     BattleState bossTurn() {
 
-        System.out.println("-- Boss turn --");
-        System.out.println(this);
-        activeEffects.forEach(System.out::println);
-
         if (hasBattleEnded()) return this;
+
+        System.out.println("Boss attacks for " + Math.max(bossDamage - playerArmor, 1) + " damage.");
 
         return new BattleState()
                 .setPlayerHealthPoints(playerHealthPoints - Math.max(bossDamage - playerArmor, 1))
@@ -105,7 +117,32 @@ public class BattleState {
     }
 
     BattleState roundOfBattle(Spell spell) {
-        return enactEffects().playerTurn(spell).enactEffects().bossTurn();
+
+        System.out.println("-- Player turn ---");
+        System.out.println(
+                "- Player has " + playerHealthPoints + " hit points, "
+                        + playerArmor + " armor, " + playerMana + " mana");
+        System.out.println("- Boss has " + bossHealthPoints + " hit points");
+
+        var state = enactEffects();
+
+        System.out.println();
+
+        state = state.playerTurn(spell);
+
+        System.out.println("-- Boss turn --");
+        System.out.println(
+                "- Player has " + playerHealthPoints + " hit points, "
+                        + playerArmor + " armor, " + playerMana + " mana");
+        System.out.println("- Boss has " + bossHealthPoints + " hit points");
+
+        state = state.enactEffects();
+
+        System.out.println();
+
+        state = state.bossTurn();
+
+        return state;
     }
 
     public BattleState setPlayerHealthPoints(int playerHealthPoints) {

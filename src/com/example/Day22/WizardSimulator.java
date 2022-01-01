@@ -22,8 +22,23 @@ public class WizardSimulator {
                 global.getSpellByName("Magic Missile")
         };
 
+        for (var spell : spellsToGo) {
+            while (battleState.getAvailableSpells().contains(spell)) battleState = battleState.roundOfBattle(spell);
+            if (battleState.hasBattleEnded()) break;
+        }
+
         System.out.println(battleState);
         System.out.println("-".repeat(72));
+
+        battleState = parse(global.TEST_INPUT_PLAYER[1], global.TEST_INPUT_BOSS[1]);
+
+        spellsToGo = new Spell[]{
+                global.getSpellByName("Recharge"),
+                global.getSpellByName("Shield"),
+                global.getSpellByName("Drain"),
+                global.getSpellByName("Poison"),
+                global.getSpellByName("Magic Missile")
+        };
 
         for (var spell : spellsToGo) {
             while (battleState.getAvailableSpells().contains(spell)) battleState = battleState.roundOfBattle(spell);

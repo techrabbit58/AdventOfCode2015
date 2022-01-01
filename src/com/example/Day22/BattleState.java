@@ -4,6 +4,7 @@ import lombok.ToString;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 @ToString(exclude = {"global", "activeEffects"})
@@ -15,7 +16,7 @@ public class BattleState {
     private int bossHealthPoints = 0;
     private int bossDamage = 0;
     private int manaSpent = 0;
-    private List<Spell> activeEffects = new ArrayList<>();
+    private List<Spell> activeEffects = Collections.emptyList();
     private final Globals global = Globals.getInstance();
 
     BattleState() {
@@ -23,6 +24,10 @@ public class BattleState {
 
     boolean hasBattleEnded() {
         return bossHealthPoints <= 0 || playerHealthPoints <= 0;
+    }
+
+    boolean hasPlayerHealthPoints() {
+        return playerHealthPoints > 0;
     }
 
     List<Spell> getAvailableSpells() {
@@ -41,22 +46,10 @@ public class BattleState {
 
         if (hasBattleEnded()) return this;
 
-        activeEffects.forEach(effect -> {
-            switch (effect.getName()) {
-                case "Poison" -> System.out.println(effect.getName() + " deals " + effect.getEffectDamage()
-                        + " damage; its timer is now " + (effect.getEffectDuration() - 1) + ".");
-                case "Shield" -> System.out.println(effect.getName() + "'s timer is now "
-                        + (effect.getEffectDuration() - 1) + ".");
-                case "Recharge" -> System.out.println(effect.getName() + " provides " + effect.getEffectMana()
-                        + " mana; its timer is now " + (effect.getEffectDuration() - 1) + ".");
-                default -> throw new RuntimeException("unexpected effect: " + effect.getName());
-            }
-        });
-
         return new BattleState()
                 .setPlayerHealthPoints(playerHealthPoints)
                 .setPlayerMana(playerMana
-                        + activeEffects.stream().map(Spell::getHealing).reduce(Integer::sum).orElse(0))
+                        + activeEffects.stream().map(Spell::getEffectMana).reduce(Integer::sum).orElse(0))
                 .setPlayerArmor(activeEffects.stream().map(Spell::getEffectArmor).reduce(Integer::sum).orElse(0))
                 .setBossHealthPoints(bossHealthPoints
                         - activeEffects.stream().map(Spell::getEffectDamage).reduce(Integer::sum).orElse(0))
@@ -72,22 +65,12 @@ public class BattleState {
 
         if (hasBattleEnded()) return this;
 
-        System.out.print("Player casts " + spell.getName());
-
         var isSpellEffect = spell.getEffectDuration() > 1;
 
         if (isSpellEffect) {
             var newList = new ArrayList<>(activeEffects);
             newList.add(spell.toBuilder().build());
             activeEffects = newList;
-            System.out.println(".");
-        } else {
-            switch (spell.getName()) {
-                case "Magic Missile" -> System.out.println(", dealing " + spell.getInstantDamage() + " damage.");
-                case "Drain" -> System.out.println(", dealing " + spell.getInstantDamage()
-                        + " damage, and healing " + spell.getHealing() + " hit points.");
-                default -> throw new RuntimeException("unexpected spell '" + spell.getName());
-            }
         }
 
         return new BattleState()
@@ -104,8 +87,6 @@ public class BattleState {
 
         if (hasBattleEnded()) return this;
 
-        System.out.println("Boss attacks for " + Math.max(bossDamage - playerArmor, 1) + " damage.");
-
         return new BattleState()
                 .setPlayerHealthPoints(playerHealthPoints - Math.max(bossDamage - playerArmor, 1))
                 .setPlayerMana(playerMana)
@@ -117,32 +98,7 @@ public class BattleState {
     }
 
     BattleState roundOfBattle(Spell spell) {
-
-        System.out.println("-- Player turn ---");
-
-        System.out.println(
-                "- Player has " + playerHealthPoints + " hit points, "
-                        + playerArmor + " armor, " + playerMana + " mana");
-        System.out.println("- Boss has " + bossHealthPoints + " hit points");
-
-        var state = enactEffects();
-        state = state.playerTurn(spell);
-
-        System.out.println();
-
-        System.out.println("-- Boss turn --");
-
-        System.out.println(
-                "- Player has " + state.playerHealthPoints + " hit points, "
-                        + state.playerArmor + " armor, " + state.playerMana + " mana");
-        System.out.println("- Boss has " + state.bossHealthPoints + " hit points");
-
-        state = state.enactEffects();
-        state = state.bossTurn();
-
-        System.out.println();
-
-        return state;
+        return enactEffects().playerTurn(spell).enactEffects().bossTurn();
     }
 
     public BattleState setPlayerHealthPoints(int playerHealthPoints) {
@@ -180,31 +136,8 @@ public class BattleState {
         return this;
     }
 
-    public int getPlayerHealthPoints() {
-        return playerHealthPoints;
-    }
-
-    public int getPlayerMana() {
-        return playerMana;
-    }
-
-    public int getPlayerArmor() {
-        return playerArmor;
-    }
-
-    public int getBossHealthPoints() {
-        return bossHealthPoints;
-    }
-
-    public int getBossDamage() {
-        return bossDamage;
-    }
-
     public int getManaSpent() {
         return manaSpent;
     }
 
-    public List<Spell> getActiveEffects() {
-        return activeEffects;
-    }
 }

@@ -59,6 +59,15 @@ public class BattleState {
                         .toList());
     }
 
+    boolean isPlayerBroke() {
+
+        var availableSpells = getAvailableSpells();
+        var minCost = availableSpells.stream().map(Spell::getCost).reduce(Integer::min).orElse(0);
+        var healthUpdate = activeEffects.stream().map(Spell::getEffectMana).reduce(Integer::sum).orElse(0);
+
+        return minCost <= playerMana || healthUpdate > 0;
+    }
+
     BattleState playerTurn(Spell spell) {
 
         if (hasBattleEnded()) return this;

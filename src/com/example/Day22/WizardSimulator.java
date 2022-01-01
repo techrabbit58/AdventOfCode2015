@@ -3,6 +3,8 @@ package com.example.Day22;
 import com.example.Helpers.Assertions;
 import com.example.Helpers.Miscellaneous;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -16,55 +18,41 @@ public class WizardSimulator {
 
         // T E S T   P A R T 1
 
-        var battleState = parse(global.TEST_INPUT_PLAYER[0], global.TEST_INPUT_BOSS[0]);
-        var spellsToGo = new Spell[]{
-                global.getSpellByName("Poison"),
-                global.getSpellByName("Magic Missile")
-        };
-        for (var spell : spellsToGo) {
-            battleState = battleState.roundOfBattle(spell);
-            if (battleState.hasBattleEnded()) break;
-        }
-        Assertions.assertEquals(226, battleState.getManaSpent());
+        BattleState battleState;
+        List<Integer> manaSpent;
+
+        battleState = parse(global.TEST_INPUT_PLAYER[0], global.TEST_INPUT_BOSS[0]);
+        manaSpent = new ArrayList<>();
+        dfs(battleState, manaSpent);
+        Assertions.assertEquals(226, manaSpent.stream().reduce(Integer::min).orElse(Integer.MAX_VALUE));
+
+        System.out.println("-".repeat(15));
 
         battleState = parse(global.TEST_INPUT_PLAYER[1], global.TEST_INPUT_BOSS[1]);
-        spellsToGo = new Spell[]{
-                global.getSpellByName("Recharge"),
-                global.getSpellByName("Shield"),
-                global.getSpellByName("Drain"),
-                global.getSpellByName("Poison"),
-                global.getSpellByName("Magic Missile")
-        };
-        for (var spell : spellsToGo) {
-            battleState = battleState.roundOfBattle(spell);
-            if (battleState.hasBattleEnded()) break;
-        }
-        Assertions.assertEquals(641, battleState.getManaSpent());
-
-        // S O L U T I O N   P A R T 1
-
-        battleState = parse(global.PUZZLE_INPUT_PLAYER, global.PUZZLE_INPUT_BOSS);
-        var minMana = dfs(battleState, Integer.MAX_VALUE);
-
-        System.out.println(minMana);
+        manaSpent = new ArrayList<>();
+        dfs(battleState, manaSpent);
+        System.out.println(manaSpent);
+        Assertions.assertTrue(manaSpent.contains(641), "did not contain desired result");
     }
 
-    private static int dfs(BattleState state, int minManaSoFar) {
+    private static void dfs(BattleState state, List<Integer> manaSpent) {
 
-        if (state.getManaSpent() > minManaSoFar) {
-            return minManaSoFar;
+        if (manaSpent.contains(state.getManaSpent())) {
+            // The result of this battle will create same or higher cost as a previous battle.
+            return;
         }
 
-        if (state.getAvailableSpells().size() == 0) {
-            return isPlayerWinner(state) ? state.getManaSpent() : minManaSoFar;
+        if (state.hasBattleEnded()) {
+            if (state.hasPlayerHealthPoints()) {
+                manaSpent.add(state.getManaSpent());
+                System.out.println(manaSpent);
+            }
+        } else {
+            for (var spell : state.getAvailableSpells()) {
+                dfs(state.roundOfBattle(spell), manaSpent);
+                System.out.println(manaSpent);
+            }
         }
-
-        for (var spell : state.getAvailableSpells()) {
-            var bucket = dfs(state.roundOfBattle(spell), minManaSoFar);
-            minManaSoFar = Math.min(bucket, minManaSoFar);
-        }
-
-        return minManaSoFar;
     }
 
     private static BattleState parse(String playerInit, String bossInit) {
@@ -87,9 +75,5 @@ public class WizardSimulator {
                         a -> a[0],
                         a -> Integer.parseInt(a[1])
                 ));
-    }
-
-    private static boolean isPlayerWinner(BattleState state) {
-        return state.hasBattleEnded() && state.hasPlayerHealthPoints();
     }
 }

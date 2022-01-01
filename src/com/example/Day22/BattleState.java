@@ -2,12 +2,9 @@ package com.example.Day22;
 
 import lombok.ToString;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
-@ToString(exclude = {"global", "activeEffects"})
+@ToString(exclude = {"global"})
 public class BattleState {
 
     private int playerHealthPoints = 0;
@@ -32,14 +29,15 @@ public class BattleState {
 
     List<Spell> getAvailableSpells() {
 
-        if (hasBattleEnded()) return new ArrayList<>();
+        if (hasBattleEnded()) return Collections.emptyList();
 
-        return Arrays.stream(global.spells).filter(spell -> {
-            var active = activeEffects.stream()
-                    .filter(effect -> effect.getName().equals(spell.getName()))
-                    .findFirst().orElse(null);
-            return spell.getCost() <= playerMana && (active == null || active.getEffectDuration() == 1);
-        }).toList();
+        return Arrays.stream(global.spells)
+                .filter(spell -> {
+                    var isActive = activeEffects.stream()
+                            .filter(effect -> effect.getEffectDuration() > 1)
+                            .anyMatch(effect -> effect.getName().equals(spell.getName()));
+                    return spell.getCost() <= playerMana && (spell.getEffectDuration() == 1 || !isActive);
+                }).toList();
     }
 
     BattleState enactEffects() {

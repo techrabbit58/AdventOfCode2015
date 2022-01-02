@@ -24,9 +24,4 @@ public class LineByLineInput {
     public void forEach(Consumer<? super String> action) {
         Files.lines(_path).forEach(action);
     }
-
-    @SneakyThrows
-    public Spliterator<String> spliterator() {
-        return Files.lines(_path).spliterator();
-    }
 }

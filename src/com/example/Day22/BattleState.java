@@ -2,9 +2,12 @@ package com.example.Day22;
 
 import lombok.ToString;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
-@ToString(exclude = {"global"})
+@ToString(exclude = {"global", "activeEffects"})
 public class BattleState {
 
     private int playerHealthPoints = 0;
@@ -59,15 +62,6 @@ public class BattleState {
                         .toList());
     }
 
-    boolean isPlayerBroke() {
-
-        var availableSpells = getAvailableSpells();
-        var minCost = availableSpells.stream().map(Spell::getCost).reduce(Integer::min).orElse(0);
-        var healthUpdate = activeEffects.stream().map(Spell::getEffectMana).reduce(Integer::sum).orElse(0);
-
-        return minCost <= playerMana || healthUpdate > 0;
-    }
-
     BattleState playerTurn(Spell spell) {
 
         if (hasBattleEnded()) return this;
@@ -96,6 +90,21 @@ public class BattleState {
 
         return new BattleState()
                 .setPlayerHealthPoints(playerHealthPoints - Math.max(bossDamage - playerArmor, 1))
+                .setPlayerMana(playerMana)
+                .setPlayerArmor(playerArmor)
+                .setBossHealthPoints(bossHealthPoints)
+                .setBossDamage(bossDamage)
+                .setManaSpent(manaSpent)
+                .setActiveEffects(List.copyOf(activeEffects));
+    }
+
+    public BattleState roundOfBattleHardMode(Spell spell) {
+        return weakenPlayer().enactEffects().playerTurn(spell).enactEffects().bossTurn();
+    }
+
+    private BattleState weakenPlayer() {
+        return new BattleState()
+                .setPlayerHealthPoints(playerHealthPoints - 1)
                 .setPlayerMana(playerMana)
                 .setPlayerArmor(playerArmor)
                 .setBossHealthPoints(bossHealthPoints)
@@ -147,4 +156,7 @@ public class BattleState {
         return manaSpent;
     }
 
+    public List<Spell> getActiveEffects() {
+        return activeEffects;
+    }
 }

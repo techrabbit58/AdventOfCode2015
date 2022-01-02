@@ -24,35 +24,55 @@ public class WizardSimulator {
         battleState = parse(global.TEST_INPUT_PLAYER[0], global.TEST_INPUT_BOSS[0]);
         manaSpent = new ArrayList<>();
         dfs(battleState, manaSpent);
-        Assertions.assertEquals(226, manaSpent.stream().reduce(Integer::min).orElse(Integer.MAX_VALUE));
-
-        System.out.println("-".repeat(15));
+        Assertions.assertEquals(226, min(manaSpent));
 
         battleState = parse(global.TEST_INPUT_PLAYER[1], global.TEST_INPUT_BOSS[1]);
         manaSpent = new ArrayList<>();
         dfs(battleState, manaSpent);
-        System.out.println(manaSpent);
-        Assertions.assertTrue(manaSpent.contains(641), "did not contain desired result");
+        Assertions.assertEquals(641, min(manaSpent));
+
+        // P U Z Z L E   P A R T 1
+
+        battleState = parse(global.PUZZLE_INPUT_PLAYER, global.PUZZLE_INPUT_BOSS);
+        manaSpent = new ArrayList<>();
+        dfs(battleState, manaSpent);
+        System.out.println("part 1 solution: " + min(manaSpent));
+
+        // P U Z Z L E   P A R T 2
+
+        battleState = parse(global.PUZZLE_INPUT_PLAYER, global.PUZZLE_INPUT_BOSS);
+        manaSpent = new ArrayList<>();
+        dfs(battleState, manaSpent, global.HARD_MODE);
+        System.out.println("part 2 solution: " + min(manaSpent));
     }
 
-    private static void dfs(BattleState state, List<Integer> manaSpent) {
+    private static void dfs(BattleState battleState, List<Integer> manaSpent) {
+        dfs(battleState, manaSpent, global.EASY_MODE);
+    }
 
-        if (manaSpent.contains(state.getManaSpent())) {
-            // The result of this battle will create same or higher cost as a previous battle.
+    private static int min(List<Integer> manaSpent) {
+        return manaSpent.stream().reduce(Integer::min).orElse(Integer.MAX_VALUE);
+    }
+
+    private static void dfs(BattleState state, List<Integer> manaSpent, boolean isHardMode) {
+
+        if (state.getAvailableSpells().size() == 0) {
+            if (state.hasBattleEnded() && state.hasPlayerHealthPoints()) {
+                manaSpent.add(state.getManaSpent());
+            }
             return;
         }
 
-        if (state.hasBattleEnded()) {
-            if (state.hasPlayerHealthPoints()) {
-                manaSpent.add(state.getManaSpent());
-                System.out.println(manaSpent);
-            }
-        } else {
-            for (var spell : state.getAvailableSpells()) {
-                dfs(state.roundOfBattle(spell), manaSpent);
-                System.out.println(manaSpent);
-            }
+        for (var spell : state.getAvailableSpells()) {
+            var bucket = deepCopy(state.getActiveEffects());
+            if (isHardMode) dfs(state.roundOfBattleHardMode(spell), manaSpent, global.HARD_MODE);
+            else dfs(state.roundOfBattle(spell), manaSpent, global.EASY_MODE);
+            state.setActiveEffects(bucket);
         }
+    }
+
+    private static List<Spell> deepCopy(List<Spell> activeEffects) {
+        return activeEffects.stream().map(effect -> effect.toBuilder().build()).toList();
     }
 
     private static BattleState parse(String playerInit, String bossInit) {

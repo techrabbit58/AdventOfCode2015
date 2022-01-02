@@ -1,10 +1,11 @@
 package com.example.Day22;
 
-import java.util.Arrays;
-
 final class Globals {
 
     private static final Globals _instance = new Globals();
+
+    final boolean EASY_MODE = false;
+    final boolean HARD_MODE = true;
 
     private Globals() {
     }

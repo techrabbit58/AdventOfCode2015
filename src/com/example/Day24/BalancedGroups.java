@@ -1,5 +1,6 @@
 package com.example.Day24;
 
+import com.example.Helpers.Assertions;
 import com.example.Helpers.Miscellaneous;
 import com.example.Helpers.Parsers;
 
@@ -18,9 +19,26 @@ public class BalancedGroups {
 
         Miscellaneous.printHeading("Day 24: It Hangs in the Balance");
 
-        var input = Parsers.resourceToIntegerList("/weighted_things.txt");
-        var weights = input.stream().sorted(Comparator.reverseOrder()).mapToInt(i -> i).toArray();
-        var totalWeight = intArraySum(weights);
+        List<Integer> input;
+        int[] weights;
+        int totalWeight;
+
+        // T E S T
+
+        input = Parsers.resourceToIntegerList("/weighted_things_for_test.txt");
+        weights = input.stream().sorted(Comparator.reverseOrder()).mapToInt(i -> i).toArray();
+        totalWeight = intArraySum(weights);
+
+        Assertions.assertEquals(99L,
+                solution(weights, totalWeight, 3, BalancedGroups::canCombineThree));
+        Assertions.assertEquals(44L,
+                solution(weights, totalWeight, 4, BalancedGroups::canCombineFour));
+
+        // P U Z Z L E
+
+        input = Parsers.resourceToIntegerList("/weighted_things.txt");
+        weights = input.stream().sorted(Comparator.reverseOrder()).mapToInt(i -> i).toArray();
+        totalWeight = intArraySum(weights);
 
         System.out.println("part 1 solution: "
                 + solution(weights, totalWeight, 3, BalancedGroups::canCombineThree));

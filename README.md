@@ -4,4 +4,5 @@ I solved all AoC 2015 puzzles between
 
 ![aoc 2015 x-mas tree](ressources/Screenshot%202022-01-04%20085531.png)
 
+> **REMARK:** Most solutions require Lombok. Requires Java 17.
 ---

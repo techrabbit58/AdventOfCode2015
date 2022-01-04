@@ -1,4 +1,5 @@
 # Advent of Code 2015 #
-I tried to solve all AoC 2015 puzzles between December 2021 and January 2022.
+I solved all AoC 2015 puzzles between
+4th December 2021 and 4th January 2022.
 
 ---
